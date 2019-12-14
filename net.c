@@ -130,7 +130,7 @@ void print_err(float* err,int s){
 
 }
 
-int train(net* network,int* in,int* out,int length,float le_rate){
+int train(net* network,int* in,int* out,int length,float le_rate,float error_target){
   //flag holds last it where weights modded
 int max_it=10000,curr_it,flag=0,i,j,k,l,max=max_tab(network->npl,network->num_layers);
 float error,**weights,*tmp,*err=malloc(max*sizeof(float)),*last_err=malloc(max*sizeof(float));
@@ -233,6 +233,8 @@ err=tmp;
 }
 error=0.5*error;
 printf("error = %f///////////////////////////////////////\n",error );
+if(error<error_target)
+  break;
 }
 return curr_it;
 }

@@ -30,7 +30,7 @@ int main(){
   network->weight[1][0][0]=-0.3;
   network->weight[1][1][0]=-1.2;
   network->weight[1][2][0]=1.1;
-  printf("train result: %d\n",train(network,k,o,4,0.1));
+  printf("train result: %d\n",train(network,k,o,4,0.1,0.01));
 
 // int j[3]={3,2,4};
 // k[8]={1,1,0,1,1,0,0,0},o[4]={0,1,1,0};
