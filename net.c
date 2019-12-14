@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#define dbg 1
 
 typedef struct {
 float** neuron;
@@ -109,7 +110,50 @@ int i;
 return 1;
 }
 
+int max_tab(int* t,int size){
+int max=t[0],i;
+	if (size>2)
+		for ( i = 1; i < size; i++)
+			if(t[i]>max)
+				max=t[i];
+	return max;
+}
 
+void print_err(float* err,int s){
+	int i;
+	for(i=0;i<s;i++){
+		printf("%f\t",err[i] );
+	}
+	printf("\n");
+
+}
+
+int train(net* network,int* in,int* out,int length,float le_rate){
+  //flag holds last it where weights modded
+int max_it=1,curr_it,flag=0,i,j,k,l;
+curr_it=max_it;
+while(flag!=curr_it+length && curr_it){
+  curr_it--;
+  for (i = 0; i < length; i++) {
+    eval(network,in+i*network->npl[0]);//////evaluate network
+    if(dbg){
+      printf("desired output:\n" );
+      for(l=0;l<network->npl[network->num_layers-1];l++)//////// print desired output
+        printf("%d\t",out[i*network->npl[1]+l]);
+      printf("\n");
+      print(network);/////print network state
+    }
+
+    if(equals(network,out+i*network->npl[1])){
+      continue;
+    }
+    flag=curr_it;
+    printf("weights getting modded\n");
+  }
+
+}
+return curr_it;
+}
 
 
 

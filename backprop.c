@@ -11,7 +11,7 @@ float x(float a){
 
 
 int main(){
-int j[3]={3,2,3};
+int j[3]={3,2,4};
 // k[8]={1,1,0,1,1,0,0,0},o[4]={0,1,1,0};
 net* network=init(3,j,&x);
 // network->weight[0][0][0]=-0.8;
@@ -23,15 +23,17 @@ net* network=init(3,j,&x);
 // network->weight[1][0][0]=-0.3;
 // network->weight[1][1][0]=-1.2;
 // network->weight[1][2][0]=1.1;
-int c[3]={1,0,1};
+int max=max_tab(network->npl,network->num_layers);
+printf("%d\n",max );
+int c[6]={1,0,1,1,1,1};
 eval(network,c);
-print(network);
-int b[3]={7,7,7};
-if(equals(network,b))
-  printf("b equals net output\n");
-  else
-  printf("not\n" );
-// printf("train result: %d\n",train(network,k,o,4,0.1));
+// print(network);
+int b[8]={7,7,7,7,6,6,6,6};
+// if(equals(network,b))
+//   printf("b equals net output\n");
+//   else
+//   printf("not\n" );
+printf("train result: %d\n",train(network,c,b,2,0.1));
 // //eval(network,k);
 // printf("%f\n",network->neuron[1][1]);
 // eval(network,&(k[0]));
