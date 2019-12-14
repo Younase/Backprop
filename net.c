@@ -10,6 +10,7 @@ float*** weight;
 int* npl; //neuron per layer
 int num_layers;   // io included
 float (*activation)(float);//activation for every layer but input
+float (*act_der)(float);///activation derivative
 /////to do: add activation table: activation for each layer
 }net;
 
@@ -20,7 +21,7 @@ return 1;
 }
 
 ////// TESTED
-net* init(int num_layers,int* npl,float (*act)(float)){
+net* init(int num_layers,int* npl,float (*act)(float),float (*act_der)(float)){
 if(num_layers<1 || npl==NULL){
 	printf("init args=null");
 	return NULL;
@@ -30,6 +31,7 @@ int i,j,k;
 net* network=(net*)malloc(sizeof(net));
 
 network->activation=act;
+network->act_der=act_der;
 network->num_layers=num_layers;
 network->npl=(int*)malloc(num_layers*sizeof(int));
 network->neuron=(float**)malloc(num_layers*sizeof(float*));
@@ -130,7 +132,8 @@ void print_err(float* err,int s){
 
 int train(net* network,int* in,int* out,int length,float le_rate){
   //flag holds last it where weights modded
-int max_it=1,curr_it,flag=0,i,j,k,l;
+int max_it=1,curr_it,flag=0,i,j,k,l,max=max_tab(network->npl,network->num_layers);
+float *tmp,*err=malloc(max*sizeof(float)),*last_err=malloc(max*sizeof(float));
 curr_it=max_it;
 while(flag!=curr_it+length && curr_it){
   curr_it--;
@@ -149,6 +152,26 @@ while(flag!=curr_it+length && curr_it){
     }
     flag=curr_it;
     printf("weights getting modded\n");
+
+    //////     OUTPUT ERROR
+    for(k=1;k<=network->npl[network->num_layers-1];k++){
+      err[k-1]=(out[i*network->npl[1]+k-1]-network->neuron[network->num_layers-1][k])
+              *network->act_der(network->neuron[network->num_layers-1][k]);
+      ///     OUTPUT WEIGHT
+      for(j=0;j<=network->npl[network->num_layers-2];j++)
+        network->weight[network->num_layers-2][j][k-1]+=le_rate*err[k-1]*network->neuron[network->num_layers-2][j];
+            }
+print_err(err,max);
+//////     TESTED UNTIL HERE
+tmp=last_err;
+last_err=err;
+err=tmp;
+//////     TESTED UNTIL HERE
+// print_err(err,max);
+// print_err(last_err,max);
+
+
+
   }
 
 }
