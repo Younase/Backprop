@@ -2,8 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#define dbg 1
-
+#define dbg 0
+#define log_every 100
+////number of epochs to skip before logging
 typedef struct {
 float** neuron;
 float*** weight;
@@ -152,6 +153,7 @@ while(flag!=curr_it+length && curr_it){
       continue;
     }
     flag=curr_it;
+    if(dbg)
     printf("weights getting modded\n");
 //////     TESTED UNTIL HERE
     ///allocating for old_weights
@@ -172,7 +174,7 @@ while(flag!=curr_it+length && curr_it){
         network->weight[network->num_layers-2][j][k-1]+=le_rate*err[k-1]*network->neuron[network->num_layers-2][j];
       }
     }
-
+if(dbg)
 print_err(err,max);
 tmp=last_err;
 last_err=err;
@@ -221,7 +223,7 @@ err=tmp;
         //     network->weight[l][j][k-1]+=le_rate*err[k-1]*network->neuron[l][j];
         //   }
         // }
-
+if(dbg)
         print_err(err,max);
         tmp=last_err;
         last_err=err;
@@ -232,9 +234,12 @@ err=tmp;
 
 }
 error=0.5*error;
-printf("error = %f///////////////////////////////////////\n",error );
-if(error<error_target)
+if(curr_it%log_every==0)
+printf("current iteration:%7d error = %10f\n",max_it-curr_it,error );
+if(error<error_target){
+  printf("current iteration:%7d error = %10f\n",max_it-curr_it,error );
   break;
+}
 }
 return curr_it;
 }

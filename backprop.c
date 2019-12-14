@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <math.h>
 #include "net.c"
-#define dbg 1
 
 float x(float a){
 	// printf("activation:%f\n",a );
