@@ -122,33 +122,6 @@ void net_print(network* net){
 
 }
 
-/////    TESTED
-int equals(net* network,int* out){
-int i;
-	for(i=0;i<network->npl[network->num_layers-1];i++)
-		if(network->neuron[network->num_layers-1][i+1]!=out[i])
-			return 0;
-return 1;
-}
-
-int max_tab(int* t,int size){
-int max=t[0],i;
-	if (size>2)
-		for ( i = 1; i < size; i++)
-			if(t[i]>max)
-				max=t[i];
-	return max;
-}
-
-void print_err(float* err,int s){
-	int i;
-	for(i=0;i<s;i++){
-		printf("%f\t",err[i] );
-	}
-	printf("\n");
-
-}
-
 
 double out_err(network* net, double output[]){
     double err=0;
@@ -246,7 +219,7 @@ int train(network* net, double input[][2], double output[][1], int length, doubl
             adjust_weights(net,lr);
             if(dbg){
                 printf("delta_out=%f\n",net->d_out[0]);
-                print_network(net);
+                net_print(net);
             }
         }
 
