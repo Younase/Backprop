@@ -4,16 +4,19 @@
 #include <math.h>
 #define dbg 0
 #define log_every 100
-////number of epochs to skip before logging
+
+
 typedef struct {
-float** neuron;
-float*** weight;
-int* npl; //neuron per layer
-int num_layers;   // io included
-float (*activation)(float);//activation for every layer but input
-float (*act_der)(float);///activation derivative
-/////to do: add activation table: activation for each layer
-}net;
+    double** neuron;
+    double*** weight;       /* weights go backwards  */
+    int* npl;               /* neuron per layer      */
+    int num_layers;         /* io included           */
+    double* d_out;          /* delta of output layer */
+    double** d_hid;         /* delta of hidden layer */
+    char activation[10];    /* activation for every layer but input */
+    
+}network;
+
 
 ///////    A REFAIRE
 float rand_(){
