@@ -97,27 +97,29 @@ void forward(network* net,double input[]){
 }
 
 
-//////   TESTED
-void print(net* network){
-	int i,j,k;
-// printf("%f\t%f\t%f\t%f\t%f\t%f\t%f\t\n",network->neuron[0][0],network->neuron[0][1],
-// network->neuron[0][2],network->neuron[1][1],network->weight[0][0][0],
-// network->weight[0][1][0],network->weight[0][2][0]);
-printf("neurons\n" );
-for ( i = 0; i < network->num_layers; i++){
-	for (j = 0; j <= network->npl[i]; j++)
-		printf("%f\t",network->neuron[i][j]);
-  printf("\n");
-  }
-printf("\n" );
-printf("weights\n");
-		for ( i = 0; i < network->num_layers-1; i++){
-			for (j = 0; j <= network->npl[i]; j++)
-			for (k = 0; k < network->npl[i+1]; k++)
-			 printf("%f\t",network->weight[i][j][k]);
-      printf("\n");
-     }
-printf("\n" );
+void net_print(network* net){
+    printf("num_layers=%d\n",net->num_layers);
+    printf("\n NEURONS\n");
+
+    for (int i=0; i<net->num_layers;i++){        /*for each layer*/
+        printf("npl[%d]=%d\n",i,net->npl[i]);
+        for(int j=0;j<=net->npl[i];j++){      /*for each neuron in layer bias included*/
+            printf("%f\t",net->neuron[i][j]);    
+        }
+        printf("\n");
+    }
+
+    printf("\nWEIGHTS\n");
+
+    for (int i=1; i<net->num_layers;i++){        /*for each layer except first*/
+        printf("LAYER %d->%d\n",i-1,i);
+        for(int j=1;j<=net->npl[i];j++){      /*for each neuron in layer except bias*/
+            for (int k=0;k<=net->npl[i-1];k++) /*for each neuron in last layer + bais*/
+                printf("%f,\t",net->weight[i][j][k]);
+            printf("\n");
+        }
+    }
+
 }
 
 /////    TESTED
