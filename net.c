@@ -149,120 +149,116 @@ void print_err(float* err,int s){
 
 }
 
-int train(net* network,int* in,int* out,int length,float le_rate,float error_target){
-  //flag holds last it where weights modded
-int max_it=10000,curr_it,flag=0,i,j,k,l,max=max_tab(network->npl,network->num_layers);
-float error,**weights,*tmp,*err=malloc(max*sizeof(float)),*last_err=malloc(max*sizeof(float));
-curr_it=max_it;
-while(flag!=curr_it+length && curr_it){
-  curr_it--;
-  for (i = 0; i < length; i++) {
-    error=0;
-    eval(network,in+i*network->npl[0]);//////evaluate network
-    if(dbg){
-      printf("desired output:\n" );
-      for(l=0;l<network->npl[network->num_layers-1];l++)//////// print desired output
-        printf("%d\t",out[i*network->npl[1]+l]);
-      printf("\n");
-      print(network);/////print network state
+
+double out_err(network* net, double output[]){
+    double err=0;
+    int out_dim=net->npl[ net->num_layers - 1 ];
+    for (int i=1 ; i<= out_dim ; i++ ){ /*for all neurons in last layer except bias*/
+        err += (output[i-1] - net->neuron[ net->num_layers - 1 ][i]) * (output[i-1] - net->neuron[ net->num_layers - 1 ][i]);
     }
+    return err;
+}
 
-    if(equals(network,out+i*network->npl[1])){
-      continue;
+void delta_out(network* net, double output[]){
+
+    int out_dim=net->npl[ net->num_layers - 1 ];
+    //double d_out[ out_dim ];
+
+    for (int i=1; i<=out_dim;i++){
+        net->d_out[i-1] = ( output[ i-1 ] - net->neuron[net->num_layers - 1 ][i] ) * sig_der(net->neuron[ net->num_layers - 1 ][i]);
     }
-    flag=curr_it;
-    if(dbg)
-    printf("weights getting modded\n");
-//////     TESTED UNTIL HERE
-    ///allocating for old_weights
-    weights=(float**)malloc((1+network->npl[network->num_layers-2])*sizeof(float*));//bias not needed, but added for j loop compat
-    for(j=0;j<=network->npl[network->num_layers-2];j++){
-      weights[j]=(float*)malloc(network->npl[network->num_layers-1]*sizeof(float*));
-    }
-    //////     OUTPUT ERROR
-    for(k=1;k<=network->npl[network->num_layers-1];k++){
-      err[k-1]=(out[i*network->npl[1]+k-1]-network->neuron[network->num_layers-1][k])
-              *network->act_der(network->neuron[network->num_layers-1][k]);   ///// no error for bias
-      error+=(out[i*network->npl[1]+k-1]-network->neuron[network->num_layers-1][k])*
-      (out[i*network->npl[1]+k-1]-network->neuron[network->num_layers-1][k]);
-      ///     OUTPUT WEIGHT
-
-      for(j=0;j<=network->npl[network->num_layers-2];j++){
-        weights[j][k-1]=network->weight[network->num_layers-2][j][k-1];
-        network->weight[network->num_layers-2][j][k-1]+=le_rate*err[k-1]*network->neuron[network->num_layers-2][j];
-      }
-    }
-if(dbg)
-print_err(err,max);
-tmp=last_err;
-last_err=err;
-err=tmp;
-
-// print_err(err,max);
-// print_err(last_err,max);
-
-/**********   HIDDEN ERRORS    ***********/
-
-  for(l=network->num_layers-2;l>0;l--){
-
-
-
-
-      for(j=1;j<=network->npl[l];j++){
-        err[j-1]=0;
-        for(k=0;k<network->npl[l+1];k++){
-          err[j-1]+=weights[j][k]*last_err[k];//add -1
-        }
-        err[j-1]*=network->act_der(network->neuron[l][j]);
-        free(weights[j]);
-        // printf("%f\t",err[j-1]);
-        }
-        // for(j=0;j<=network->npl[l];j++){
-        //   free(weights[j]);
-        // }
-        free(weights);
-        weights=(float**)malloc((1+network->npl[l])*sizeof(float*));//bias not needed, but added for j loop compat
-        for(j=0;j<=network->npl[l];j++){
-          weights[j]=(float*)malloc(network->npl[l+1]*sizeof(float*));
-        }
-        ///// free/allocate done
-        /////save weights
-        /////mod weights
-        for(k=0;k<=network->npl[l+1];k++){
-          for(j=0;j<=network->npl[l];j++){
-            weights[j][k]=network->weight[l-1][j][k];
-            network->weight[l-1][j][k]+=le_rate*err[k]*network->neuron[l-1][j];
-          }
-        }
-        //
-        // for(k=1;k<=network->npl[l+1];k++){
-        //   for(j=0;j<=network->npl[l];j++){
-        //     weights[j][k-1]=network->weight[l][j][k-1];
-        //     network->weight[l][j][k-1]+=le_rate*err[k-1]*network->neuron[l][j];
-        //   }
-        // }
-if(dbg)
-        print_err(err,max);
-        tmp=last_err;
-        last_err=err;
-        err=tmp;
-    }
-
 
 
 }
-error=0.5*error;
-if(curr_it%log_every==0)
-printf("current iteration:%7d error = %10f\n",max_it-curr_it,error );
-if(error<error_target){
-  printf("current iteration:%7d error = %10f\n",max_it-curr_it,error );
-  break;
+
+
+int max_tbl(int tbl[],int len){
+    int max;
+    if (len<=0){
+        printf("EMPTY table provided");
+        return -1;
+    }
+    max=tbl[0];
+    for(int i=1;i<len;i++){
+        if( tbl[i]>max )
+            max=tbl[i];
+    }
+    return max;
 }
-}
-return curr_it;
+
+void delta_hid(network* net){
+    int i,j,k;
+
+    /*  INIT d_hid*/
+    for(i=net->num_layers-2;i>0;i--){
+        for(j=1; j<net->npl[i];j++){   /*no bias*/
+            net->d_hid[i][j-1] = 0;
+        }                
+    }
+
+    /*compute error d_hid*/
+    for(i=net->num_layers-2;i>0;i--){   /*for all hidden layers*/
+        for(j=1; j<=net->npl[i];j++){   /*for all neurons except bias*/
+            for(k=1; k<=net->npl[i+1]; k++){  /*for all neurons in next layer (error backpropagates)*/
+                if( i == net->num_layers-2 ) /*if propagating from last hidden layer*/
+                    net->d_hid[i][j-1] += net->d_out[k-1] * net->weight[i+1][k][j];
+                else
+                    net->d_hid[i][j-1] += net->d_hid[i+1][k-1] * net-> weight[i+1][k][j];
+            }
+            net->d_hid[i][j-1] *= sig_der( net->neuron[i][j] );
+        }
+    }
+
 }
 
 
+int adjust_weights(network* net, double lr){
+    int i,j,k;
+
+    for(i=net->num_layers-1;i>0;i--){   /*for all layers except input*/
+        for(j=1; j<=net->npl[i];j++){   /*for all neurons except bias*/
+            for(k=0; k<=net->npl[i-1]; k++){  /*for all neurons in previous layer bias included (weight from current to previous)*/
+                if( i == net->num_layers-1 ) /*if adjusting last hidden layer*/
+                    net->weight[i][j][k] += lr * net->d_out[j-1] * net->neuron [ i-1 ][ k ];
+                else
+                    net->weight[i][j][k] += lr * net->d_hid[i][j-1] * net->neuron [ i-1 ][ k ];
+            }
+        }
+    }
+    return 0;
+}
+
+
+
+int train(network* net, double input[][2], double output[][1], int length, double lr, double err_tgt){
+    int max_it=110000;
+    int report_every=1;
+    double err;
+    printf("start training\n ");
+    for( int i=0; i<max_it; i++ ){
+        err=0;
+        for( int j=0; j<length; j++ ){
+            forward(net, input[j]);
+            /*out_err, delta_out, delta_hidd*/
+            err+=out_err(net, output[j]);
+            delta_out(net,output[j]);
+            delta_hid(net);
+            adjust_weights(net,lr);
+            if(dbg){
+                printf("delta_out=%f\n",net->d_out[0]);
+                print_network(net);
+            }
+        }
+
+        err=err*1/(2*length);
+        if(i%report_every==0){
+            printf("iteration=%d error=%f\n",i,err);
+        }
+        if (err<=err_tgt)
+            return i;
+    }
+    return 0;
+}
 
 
 
