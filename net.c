@@ -65,6 +65,15 @@ network* net_init(int num_layers, int* nrns_per_layer, char* activation){
     return net;
 }
 
+float sigmoid(float a){
+    // printf("activation:%f\n",a );
+    return 1 / (1 + exp(-a));
+}
+
+float sig_der(float a){
+    return a*(1-a);
+}
+
 /////   TESTED
 int eval(net* network,int* in){
 int i,j,k;
