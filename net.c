@@ -18,10 +18,8 @@ typedef struct {
 }network;
 
 
-///////    A REFAIRE
-float rand_(){
-
-return 1;
+double random_weight(){
+    return (double)rand()/(double)RAND_MAX-0.5;
 }
 
 ////// TESTED
