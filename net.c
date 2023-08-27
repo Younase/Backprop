@@ -74,28 +74,28 @@ float sig_der(float a){
     return a*(1-a);
 }
 
-/////   TESTED
-int eval(net* network,int* in){
-int i,j,k;
-for(i=1;i<=network->npl[0];i++){
-	network->neuron[0][i]=in[i-1];
-	//printf("%d",in[i-1]);
-}
-for(i=1;i<network->num_layers;i++){
-	for(j=1;j<=network->npl[i];j++){//skip bias modded
-		network->neuron[i][j]=0;
-		for(k=0;k<=network->npl[i-1];k++){//bias
-			network->neuron[i][j]+=network->neuron[i-1][k]*network->weight[i-1][k][j-1];
+void forward(network* net,double input[]){
 
-		}
-		network->neuron[i][j]=network->activation(network->neuron[i][j]);
-	// network->neuron[i][j]=(network->neuron[i][j]>0)?1:0;
-	}
-}
-// network->neuron[i-1][j-1]=(network->neuron[i-1][j-1]>0)?1:0;
-return 1;
+    /*SETTING FIRST LAYER INPUT*/
+    for(int i=1;i<=net->npl[0];i++){
+        net->neuron[0][i]=input[i-1];
+    }
+
+    /*FORWARD PASS*/
+    for (int i=1; i<net->num_layers;i++){        /*for each layer except first*/
+
+        for(int j=1;j<=net->npl[i];j++){      /*for each neuron in layer except bias*/
+            net->neuron[i][j]=0;
+            for(int k=0;k<=net->npl[i-1];k++){
+                net->neuron[i][j]+=net->neuron[i-1][k]*net->weight[i][j][k];
+            }
+            //SIGMOID GOES HERE
+            net->neuron[i][j]=sigmoid(net->neuron[i][j]);
+        }
+    }
 
 }
+
 
 //////   TESTED
 void print(net* network){
