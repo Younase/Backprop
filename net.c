@@ -22,41 +22,47 @@ double random_weight(){
     return (double)rand()/(double)RAND_MAX-0.5;
 }
 
-////// TESTED
-net* init(int num_layers,int* npl,float (*act)(float),float (*act_der)(float)){
-if(num_layers<1 || npl==NULL){
-	printf("init args=null");
-	return NULL;
-}
-//////test npl>0
-int i,j,k;
-net* network=(net*)malloc(sizeof(net));
+network* net_init(int num_layers, int* nrns_per_layer, char* activation){
+    if(num_layers<1 || nrns_per_layer==NULL || activation==NULL){
+        printf("wrong arguments");
+        return NULL;
+    }
 
-network->activation=act;
-network->act_der=act_der;
-network->num_layers=num_layers;
-network->npl=(int*)malloc(num_layers*sizeof(int));
-network->neuron=(float**)malloc(num_layers*sizeof(float*));
-network->weight=(float***)malloc(num_layers*sizeof(float**));
+    network* net=(network*)malloc(sizeof(network));
 
-network->neuron[0]=(float*)malloc((1+npl[0])*sizeof(float));
-network->npl[0]=npl[0];
-network->neuron[0][0]=1;
-for(i=1;i<num_layers;i++){
-	network->weight[i-1]=(float**)malloc((1+npl[i-1])*sizeof(float*)); //1 for bias
-	network->npl[i]=npl[i];
-	network->neuron[i]=(float*)malloc((1+npl[i])*sizeof(float)); // bias in each layer remodded
-	network->neuron[i][0]=1;
-	for(j=0;j<=npl[i-1];j++){
-		network->weight[i-1][j]=(float*)malloc(npl[i]*sizeof(float));
-		for(k=0;k<npl[i];k++){
-	 		network->weight[i-1][j][k]=rand_();
-		}
-	}
-}
-/////////// last layer has unused bias
-return network;
+    net->num_layers=num_layers;
+    net->npl=(int*)malloc(num_layers*sizeof(int));
+    net->neuron=(double**)malloc(num_layers*sizeof(double*));
+    net->weight=(double***)malloc(num_layers*sizeof(double**));
+    net->d_out=(double*)malloc(net->npl[ net->num_layers - 1 ]*sizeof(double));
+    net->d_hid=(double**)malloc(net->num_layers*sizeof(double*));
 
+    /*INIT NEURONS*/
+    for (int i=0; i<num_layers;i++){        /*for each layer*/
+        net->npl[i]=nrns_per_layer[i];
+        net->neuron[i]=(double*)malloc((1+net->npl[i])*sizeof(double));
+        net->neuron[i][0]=1;                 /*set bias to 1*/
+        for(int j=1;j<=net->npl[i];j++){      /*for each neuron in layer except bias*/
+            net->neuron[i][j]=0;    
+        }
+    }
+
+    /*INIT WEIGHTS*/
+    for (int i=1; i<num_layers;i++){        /*for each layer*/
+        net->weight[i]=(double**)malloc((1+net->npl[i-1])*sizeof(double*));
+        for(int j=1;j<=net->npl[i];j++){      /*for each neuron in layer except bias*/
+            net->weight[i][j]=(double*)malloc((1+net->npl[i-1])*sizeof(double));
+            for (int k=0;k<=net->npl[i-1];k++)
+                net->weight[i][j][k]=random_weight();
+        }
+    }
+    
+    /*INIT delta_hidden*/
+    for (int i=0; i<num_layers; i++){
+            net->d_hid[i]=(double*) malloc(net->npl[i]*sizeof(double));
+    }
+
+    return net;
 }
 
 /////   TESTED
