@@ -164,7 +164,7 @@ void delta_hid(network* net){
 
     /*  INIT d_hid*/
     for(i=net->num_layers-2;i>0;i--){
-        for(j=1; j<net->npl[i];j++){   /*no bias*/
+        for(j=1; j<=net->npl[i];j++){   /*no bias*/
             net->d_hid[i][j-1] = 0;
         }                
     }
@@ -205,7 +205,7 @@ int adjust_weights(network* net, double lr){
 
 int train(network* net, double input[][2], double output[][1], int length, double lr, double err_tgt){
     int max_it=110000;
-    int report_every=1;
+    int report_every=100;
     double err;
     printf("start training\n ");
     for( int i=0; i<max_it; i++ ){
