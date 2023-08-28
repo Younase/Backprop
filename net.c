@@ -58,7 +58,7 @@ network* net_init(int num_layers, int* nrns_per_layer, char* activation){
     }
     
     /*INIT delta_hidden*/
-    for (int i=0; i<num_layers; i++){
+    for (int i=net->num_layers-2;i>0;i--){
             net->d_hid[i]=(double*) malloc(net->npl[i]*sizeof(double));
     }
 
