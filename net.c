@@ -203,18 +203,20 @@ int adjust_weights(network* net, double lr){
 
 
 
-int train(network* net, double input[][2], double output[][1], int length, double lr, double err_tgt){
+int train(network* net, double* input, double* output, int length, double lr, double err_tgt){
     int max_it=110000;
     int report_every=100;
+    int in_length=net->npl[0];
+    int out_length=net->npl[net->num_layers-1];
     double err;
     printf("start training\n ");
     for( int i=0; i<max_it; i++ ){
         err=0;
         for( int j=0; j<length; j++ ){
-            forward(net, input[j]);
+            forward(net, &input[j*in_length]);
             /*out_err, delta_out, delta_hidd*/
-            err+=out_err(net, output[j]);
-            delta_out(net,output[j]);
+            err+=out_err(net, &output[j*out_length]);
+            delta_out(net,&output[j*out_length]);
             delta_hid(net);
             adjust_weights(net,lr);
             if(dbg){
