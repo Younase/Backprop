@@ -35,7 +35,7 @@ network* net_init(int num_layers, int* nrns_per_layer, char* activation){
     net->neuron=(double**)malloc(num_layers*sizeof(double*));
     net->weight=(double***)malloc(num_layers*sizeof(double**));
     net->d_out=(double*)malloc(nrns_per_layer[ net->num_layers - 1 ]*sizeof(double));
-    net->d_hid=(double**)malloc(net->num_layers*sizeof(double*));
+    net->d_hid=(double**)malloc((net->num_layers-2)*sizeof(double*));
 
     /*INIT NEURONS*/
     for (int i=0; i<num_layers;i++){        /*for each layer*/
