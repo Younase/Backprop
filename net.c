@@ -50,7 +50,7 @@ network* net_init(int num_layers, int* nrns_per_layer, char* activation){
     /*INIT WEIGHTS*/
     for (int i=1; i<num_layers;i++){        /*for each layer*/
         net->weight[i]=(double**)malloc((1+net->npl[i-1])*sizeof(double*));
-        for(int j=1;j<=net->npl[i];j++){      /*for each neuron in layer except bias*/
+        for(int j=0;j<=net->npl[i];j++){      /*for each neuron in layer except bias*/
             net->weight[i][j]=(double*)malloc((1+net->npl[i-1])*sizeof(double));
             for (int k=0;k<=net->npl[i-1];k++)
                 net->weight[i][j][k]=random_weight();
