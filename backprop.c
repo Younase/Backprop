@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "net.c"
+#include "net.h"
 
 int num_layers=3;
 int nrns_per_layer[]={2,2,1};

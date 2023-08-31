@@ -2,21 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include  "net.h"
 #define dbg 0
 #define log_every 100
 
-
-typedef struct {
-    double** neuron;
-    double*** weight;       /* weights go backwards  */
-    int* npl;               /* neuron per layer      */
-    int num_layers;         /* io included           */
-    double* d_out;          /* delta of output layer */
-    double** d_hid;         /* delta of hidden layer */
-    char activation[10];    /* activation for every layer but input */
-    
-}network;
-
+struct network;
 
 double random_weight(){
     return (double)rand()/(double)RAND_MAX-0.5;
