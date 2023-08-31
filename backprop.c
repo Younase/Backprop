@@ -24,7 +24,7 @@ int main(){
 
 
     net=net_init(num_layers, nrns_per_layer, activation);
-    train(net,k,o,4,lr,0.001);
+    train(net,(double *)k,(double *)o,4,lr,0.001);
 
     while (1){
         for( int i=0; i<2; i++ ){
