@@ -1,5 +1,5 @@
 # Backprop
-A MultiLayer Deep Neural Network Backpropagation implementation in C with XOR and simple digit recognition demos.
+A MultiLayer Deep Neural Network Backpropagation implementation in C with XOR and simple hand-written digit recognition demos.
 
 
 ## Usage
