@@ -156,7 +156,8 @@ char activation[]="sigmoid";
 
 int main()
 {
-
+    char* rect = "\U00002588";
+    char* space = "\U00002000";
     srand( time( NULL ) );
     network* net;
     net=net_init(num_layers, nrns_per_layer, activation);
@@ -170,7 +171,7 @@ int main()
         {
             for( int j=0; j<5; j++ )
             {
-                printf("%c ",(k[i][7*j+l])==1?178:32);
+                printf("%s",(k[i][7*j+l])==1?rect:space);
             }
             printf("\n");
         }
