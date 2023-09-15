@@ -31,4 +31,5 @@ gcc -Wall -o digit_recon digit_recon.c net.c -lm
 * ~~add support for different inputs/outputs combinations~~
 * add support for saving and loading models
 * return network output in feed forward function
+* change activation in network struct to enum
 * ~~expand readme~~
