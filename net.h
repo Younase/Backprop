@@ -1,3 +1,13 @@
+/********************************************************************************
+ *                                                                              *
+ * net.h                                                                        *
+ *                                                                              *
+ * A MultiLayer Deep Neural Network Backpropagation implementation              *
+ *                                                                              *
+ * srand(time(NULL)); should be used before net_init() to randomize weights     *
+ *                                                                              *
+ ********************************************************************************/
+
 #ifndef NET_H
 #define NET_H
 
